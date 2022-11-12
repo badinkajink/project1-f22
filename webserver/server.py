@@ -36,8 +36,8 @@ app = Flask(__name__, template_folder=tmpl_dir)
 # For your convenience, we already set it to the class database
 
 # Use the DB credentials you received by e-mail
-DB_USER = "YOUR_DB_USERNAME_HERE"
-DB_PASSWORD = "YOUR_DB_PASSWORD_HERE"
+DB_USER = "wx2214"
+DB_PASSWORD = "0366"
 
 DB_SERVER = "w4111.cisxo09blonu.us-east-1.rds.amazonaws.com"
 
@@ -72,7 +72,7 @@ def before_request():
   try:
     g.conn = engine.connect()
   except:
-    print "uh oh, problem connecting to database"
+    print("uh oh, problem connecting to database")
     import traceback; traceback.print_exc()
     g.conn = None
 
@@ -114,19 +114,23 @@ def index():
   """
 
   # DEBUG: this is debugging code to see what request looks like
-  print request.args
-
-
-  #
+  print(request.args)
   # example of a database query
-  #
   cursor = g.conn.execute("SELECT name FROM test")
   names = []
   for result in cursor:
+    print(result)
     names.append(result['name'])  # can also be accessed using result[0]
+    print(names)
   cursor.close()
 
-  #
+  # cursor = g.conn.execute("SELECT AnimalName FROM Animal")
+  # n = []
+  # for result in cursor:
+  #   print(result)
+  #   n.append(result['name'])  # can also be accessed using result[0]
+  #   print(n)
+  # cursor.close()
   # Flask uses Jinja templates, which is an extension to HTML where you can
   # pass data to a template and dynamically generate HTML based on the data
   # (you can think of it as simple PHP)
@@ -137,23 +141,8 @@ def index():
   # context are the variables that are passed to the template.
   # for example, "data" key in the context variable defined below will be 
   # accessible as a variable in index.html:
-  #
-  #     # will print: [u'grace hopper', u'alan turing', u'ada lovelace']
-  #     <div>{{data}}</div>
-  #     
-  #     # creates a <div> tag for each element in data
-  #     # will print: 
-  #     #
-  #     #   <div>grace hopper</div>
-  #     #   <div>alan turing</div>
-  #     #   <div>ada lovelace</div>
-  #     #
-  #     {% for n in data %}
-  #     <div>{{n}}</div>
-  #     {% endfor %}
-  #
   context = dict(data = names)
-
+  print(context)
 
   #
   # render_template looks in the templates/ folder for files.
@@ -178,7 +167,7 @@ def another():
 @app.route('/add', methods=['POST'])
 def add():
   name = request.form['name']
-  print name
+  print(name)
   cmd = 'INSERT INTO test(name) VALUES (:name1), (:name2)';
   g.conn.execute(text(cmd), name1 = name, name2 = name);
   return redirect('/')
@@ -212,7 +201,7 @@ if __name__ == "__main__":
     """
 
     HOST, PORT = host, port
-    print "running on %s:%d" % (HOST, PORT)
+    print("running on %s:%d" % (HOST, PORT))
     app.run(host=HOST, port=PORT, debug=debug, threaded=threaded)
 
 
