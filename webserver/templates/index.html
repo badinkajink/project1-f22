@@ -10,9 +10,18 @@
 <body>
   <h1>Some famous Computer Scientists</h1>
   <div>{{data}}</div>
+  <br>
+  <div>
+    Scientists
+    {% for n in data[0] %}
+    <div>{{n}}</div>
+    {% endfor %}
+    <br>
+  </div>
 
   <div>
-    {% for n in data %}
+    Zipcodes
+    {% for n in data[1] %}
     <div>{{n}}</div>
     {% endfor %}
   </div>
@@ -21,6 +30,10 @@
 
 <form method="POST" action="/add">
 <p>Name of new computer scientist: <input type="text" name="name"> <input type="submit" value="Add"></p>
+</form>
+
+<form method="POST" action="/addlocation">
+  <p>add a new location: <input type="text" name="zipcode"> <input type="submit" value="Add"></p>
 </form>
 
 </body>

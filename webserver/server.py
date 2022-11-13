@@ -123,6 +123,14 @@ def index():
     names.append(result['name'])  # can also be accessed using result[0]
   cursor.close()
 
+  cursor = g.conn.execute("SELECT * FROM Location")
+  n = []
+  for result in cursor:
+    print(result['zipcode'])
+    n.append(result['zipcode'])  
+  cursor.close()
+  # context = dict(data = n)
+
   # Flask uses Jinja templates, which is an extension to HTML where you can
   # pass data to a template and dynamically generate HTML based on the data
   # (you can think of it as simple PHP)
@@ -133,7 +141,7 @@ def index():
   # context are the variables that are passed to the template.
   # for example, "data" key in the context variable defined below will be 
   # accessible as a variable in index.html:
-  context = dict(data = names)
+  context = dict(data = [names, n])
   print(context)
 
   #
@@ -156,10 +164,19 @@ def another():
   n = []
   for result in cursor:
     print(result['animalname'])
-    n.append(result['animalname'])  # can also be accessed using result[0]
+    n.append(result['animalname']) 
     print(n)
   cursor.close()
   context = dict(data = n)
+  print(context)
+
+  cursor = g.conn.execute("SELECT * FROM Location")
+  n = []
+  for result in cursor:
+    print(result['zipcode'])
+    n.append(result['zipcode'])  
+  cursor.close()
+  # context = dict(data = n)
   print(context)
 
   return render_template("anotherfile.html", **context)
@@ -170,19 +187,19 @@ def another():
 def add():
   name = request.form['name']
   print(name)
-  cmd = 'INSERT INTO test(name) VALUES (:name1), (:name2)';
-  g.conn.execute(text(cmd), name1 = name, name2 = name);
+  cmd = 'INSERT INTO test(name) VALUES (:name1), (:name2)'
+  g.conn.execute(text(cmd), name1 = name, name2 = name)
   return redirect('/')
 
 
-# # Example of adding new data to the database
-# @app.route('/addanimal', methods=['POST'])
-# def add():
-#   name = request.form['animalname']
-#   print(name)
-#   cmd = 'INSERT INTO test(name) VALUES (:name1), (:name2)';
-#   g.conn.execute(text(cmd), name1 = name, name2 = name);
-#   return redirect('/')
+# Example of adding new data to the database
+@app.route('/addlocation', methods=['POST'])
+def addlocation():
+  zipcode = request.form['zipcode']
+  print(zipcode)
+  cmd = 'INSERT INTO Location VALUES (:zipcode, :address);'
+  g.conn.execute(text(cmd), zipcode = int(zipcode), address = 'aa')
+  return redirect('/another')
 
 
 @app.route('/login')
