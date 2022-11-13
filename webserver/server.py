@@ -121,16 +121,8 @@ def index():
   for result in cursor:
     print(result)
     names.append(result['name'])  # can also be accessed using result[0]
-    print(names)
   cursor.close()
 
-  # cursor = g.conn.execute("SELECT AnimalName FROM Animal")
-  # n = []
-  # for result in cursor:
-  #   print(result)
-  #   n.append(result['name'])  # can also be accessed using result[0]
-  #   print(n)
-  # cursor.close()
   # Flask uses Jinja templates, which is an extension to HTML where you can
   # pass data to a template and dynamically generate HTML based on the data
   # (you can think of it as simple PHP)
@@ -160,7 +152,17 @@ def index():
 #
 @app.route('/another')
 def another():
-  return render_template("anotherfile.html")
+  cursor = g.conn.execute("SELECT * FROM Animal")
+  n = []
+  for result in cursor:
+    print(result['animalname'])
+    n.append(result['animalname'])  # can also be accessed using result[0]
+    print(n)
+  cursor.close()
+  context = dict(data = n)
+  print(context)
+
+  return render_template("anotherfile.html", **context)
 
 
 # Example of adding new data to the database
@@ -171,6 +173,16 @@ def add():
   cmd = 'INSERT INTO test(name) VALUES (:name1), (:name2)';
   g.conn.execute(text(cmd), name1 = name, name2 = name);
   return redirect('/')
+
+
+# # Example of adding new data to the database
+# @app.route('/addanimal', methods=['POST'])
+# def add():
+#   name = request.form['animalname']
+#   print(name)
+#   cmd = 'INSERT INTO test(name) VALUES (:name1), (:name2)';
+#   g.conn.execute(text(cmd), name1 = name, name2 = name);
+#   return redirect('/')
 
 
 @app.route('/login')
