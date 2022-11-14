@@ -21,11 +21,10 @@ from sqlalchemy.pool import NullPool
 import psycopg2
 from flask import Flask, request, render_template, g, redirect, Response
 from flask import Blueprint
-from jinja2 import evalcontextfilter, Markup, escape
 import re
 
 
-# blueprint = Blueprint('custom_template_filters', __name__)
+# blueprint = Blueprint('custom_template_filters, __name__)
 # def register_template_filters(flask_app: Flask) -> None:
 #     flask_app.register_blueprint(blueprint)
 #     return None
@@ -33,17 +32,6 @@ import re
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
 # register_template_filters(flask_app=app)
-
-@app.template_filter()
-@evalcontextfilter
-def newline_to_br(context, value: str) -> str:
-    result = "<br />".join(re.split(r'(?:\r\n|\r|\n){2,}', escape(value)))
-
-    if context.autoescape:
-        result = Markup(result)
-
-    return result
-
 
 # XXX: The Database URI should be in the format of: 
 #
