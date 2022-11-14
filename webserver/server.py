@@ -251,7 +251,7 @@ def submitsearch():
   AND a.AnimalType {"IS NOT NULL" if dict['animaltype'] == 'Any' else f"= '{dict['animaltype']}'"}
   AND i.zipcode {"IS NOT NULL" if dict['zipcode'] == 'Any' else f"= '{dict['zipcode']}'"}
   AND i.intakecondition {"IS NOT NULL" if dict['intakecondition'] == 'Any' else f"= '{dict['intakecondition']}'"}
-  AND {"1=1" if dict['outcomesubtype'] == 'Any' else f"o.outcomesubtype = '{dict['intakecondition']}'"}
+  AND {"o.outcomesubtype IS NOT NULL" if dict['outcomesubtype'] == 'Any' else f"o.outcomesubtype = '{dict['intakecondition']}'"}
   """
   print(query)
   cursor = g.conn.execute(text(query))

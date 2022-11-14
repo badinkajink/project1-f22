@@ -56,6 +56,7 @@
 <body>
 <div class="container">
   <h1>Animal Shelter Search</h1>
+  <p><a href="/">Add or Modify Data</a></p>
 
   <button type="button" class="collapsible">View Shelters</button>
   <div class="content">
@@ -142,11 +143,9 @@
     {% endfor %}
   </div>
 
-  <p><a href="/">Add or Modify Data</a></p>
-
   <div class="row"> <div class="col">Custom Search</div></div>
 
-  <div class="row">
+  <div class="row" style="font-weight: bold; background-color: lightblue;">
     <div class="col-4">Shelter Name</div>
     <div class="col-1">Type</div>
     <div class="col-1">Sex</div>
@@ -213,13 +212,17 @@
       </select>
     </div>
   </div>
-  <div class="row"> <div class="col-4"></div> <div class="col"> <button type="submit" class="btn btn-primary">Submit</button> </div> <div class="col-4"></div> </div>
+  <div class="row"> <div class="col-5"></div> 
+    <div class="col"> 
+      <button type="submit" class="btn btn-primary">Submit</button> 
+    </div> 
+    <div class="col-4"></div> </div>
   </form>
 
   <div class="row"> <div class="col">Search Result for: </div></div>
-  <div style="white-space: pre-wrap;">{{data['query']}}</div>
+  <div style="white-space: pre-wrap; background-color: lightgrey;">{{data['query']}}</div>
 
-  <div class="row">
+  <div class="row" style="font-weight: bold; background-color: lightblue;">
     <div class="col-1">Name</div>
     <div class="col-1">ID</div>
     <div class="col-1">Shelter Name</div>
