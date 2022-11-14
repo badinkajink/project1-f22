@@ -217,7 +217,30 @@
   <div class="row"> <div class="col-4"></div> <div class="col"> <button type="submit" class="btn btn-primary">Submit</button> </div> <div class="col-4"></div> </div>
   </form>
 
+  <div class="row"> <div class="col">Search Result</div></div>
+
+  <div class="row">
+    <div class="col-4">Shelter Name</div>
+    <div class="col-1">Type</div>
+    <div class="col-1">Sex</div>
+    <div class="col-2">Intake Location</div>
+    <div class="col-2">Intake Condition</div>
+    <div class="col-2">Outcome Type</div>
   </div>
+
+  <div class="row">
+    {% for n in data['searchresult'] %}
+    <div class="row">
+      {{n}}
+    <!-- {% for k in data['outcomes'][0].keys() %}
+      <div class="col-3">{{n[k]}}</div>
+    {% endfor %} -->
+    </div>
+    {% endfor %}
+  </div>
+
+  </div>
+
 </div>
 </body>
 

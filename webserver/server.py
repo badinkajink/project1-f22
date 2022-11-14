@@ -18,6 +18,7 @@ Read about it online.
 import os
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
+import psycopg2
 from flask import Flask, request, render_template, g, redirect, Response
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
@@ -40,7 +41,7 @@ DB_USER = "wx2214"
 DB_PASSWORD = "0366"
 DB_SERVER = "w4111.cisxo09blonu.us-east-1.rds.amazonaws.com"
 DATABASEURI = "postgresql://"+DB_USER+":"+DB_PASSWORD+"@"+DB_SERVER+"/proj1part2"
-search_result = ""
+search_result = []
 
 #
 # This line creates a database engine that knows how to connect to the URI above
@@ -179,7 +180,8 @@ def search():
   outcomes = list(cursor)
   cursor.close()
 
-  context = dict(data = {"shelters": shelters, "animals": animals, "intakes": intakes, "locations": locations, "outcomes": outcomes})
+  print(search_result)
+  context = dict(data = {"shelters": shelters, "animals": animals, "intakes": intakes, "locations": locations, "outcomes": outcomes, "searchresult": search_result})
 
   return render_template("search.html", **context)
 
@@ -215,9 +217,17 @@ def submitsearch():
   for k in keys:
     if dict[k] != 'Any':
       query_dict[k] = 'a'
-  cursor = g.conn.execute("SELECT * FROM Location")
-  locations = list(cursor)
+  sex = dict['animalsex']
+  psycopg2.paramstyle = 'named'
+  query = f"""SELECT distinct a.AnimalName, a.AnimalID
+  FROM Animal as a, Shelter as s, Intake as i, Outcome as o
+  WHERE a.AnimalSex LIKE {"'%Female%'" if sex == "Female" else ''} {"'% Male%'" if sex == "Male" else ''} {"'%ale%'" if sex == 'Any' else ''}"""
+  print(query)
+  cursor = g.conn.execute(text(query))
+  result = list(cursor)
   cursor.close()
+  print(result)
+  search_result = result
   return redirect('/search')
 
 @app.route('/addShelter', methods=['POST'])
