@@ -218,7 +218,8 @@ def submitsearch():
   cursor = g.conn.execute("SELECT * FROM Location")
   locations = list(cursor)
   cursor.close()
-  
+  return redirect('/search')
+
 @app.route('/addShelter', methods=['POST'])
 def addShelter():
   ShelterID = request.form['ShelterID']
@@ -266,13 +267,14 @@ def addIntake():
 
 @app.route('/addLocation', methods=['POST'])
 def addLocation():
-  Location = request.form['Location']
+  print(request.form)
+  Location = request.form['location']
   print(Location)
-  LocationAddress = request.form['LocationAddress']
+  LocationAddress = request.form['address']
   print(LocationAddress)
     
-  cmd = 'INSERT INTO Location VALUES (:Location, :LocationAddress);'
-  g.conn.execute(text(cmd), Location = 'Location', LocationAddress= 'LocationAddress') 
+  cmd = 'INSERT INTO Location VALUES (:location, :address);'
+  g.conn.execute(text(cmd), location = Location, address= LocationAddress) 
   return redirect('/search')
 
 @app.route('/addOutcome', methods=['POST'])
