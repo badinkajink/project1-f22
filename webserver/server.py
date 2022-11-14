@@ -124,10 +124,10 @@ def index():
   cursor.close()
 
   cursor = g.conn.execute("SELECT * FROM Location")
-  n = []
+  zipcodes = []
   for result in cursor:
-    print(result['zipcode'])
-    n.append(result['zipcode'])  
+    print(result)
+    zipcodes.append(result['zipcode'])  
   cursor.close()
   # context = dict(data = n)
 
@@ -141,7 +141,7 @@ def index():
   # context are the variables that are passed to the template.
   # for example, "data" key in the context variable defined below will be 
   # accessible as a variable in index.html:
-  context = dict(data = [names, n])
+  context = dict(data = {"animalnames": names, "zipcodes": zipcodes})
   print(context)
 
   #
@@ -163,19 +163,18 @@ def search():
   cursor = g.conn.execute("SELECT * FROM Animal")
   n = []
   for result in cursor:
-    print(result['animalname'])
+    print(result)
     n.append(result['animalname']) 
-    print(n)
   cursor.close()
 
   cursor = g.conn.execute("SELECT * FROM Location")
   zipcodes = []
   for result in cursor:
-    print(result['zipcode'])
+    print(result)
     zipcodes.append(result['zipcode'])  
   cursor.close()
   # context = dict(data = n)
-  context = dict(data = [n, zipcodes])
+  context = dict(data = {"animalnames": n, "zipcodes": zipcodes})
   print(context)
 
 

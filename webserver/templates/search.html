@@ -56,21 +56,36 @@
   <h1>Animal Shelter Search</h1>
   <button type="button" class="collapsible">View Animal Names</button>
   <div class="content">
-    {% for n in data[0] %}
+    {% for n in data['animalnames'] %}
     <div>{{n}}</div>
     {% endfor %}
     <br>
   </div>
   <button type="button" class="collapsible">View Locations</button>
   <div class="content">
-    {% for n in data[1] %}
+    {% for n in data['zipcodes'] %}
     <div>{{n}}</div>
     {% endfor %}
     <br>
   </div>
 
-<p><a href="/">Go to the other page</a></p>
+  <p><a href="/">Go to the other page</a></p>
 
+
+  <div>
+    <select name="animalnames" method="GET" action="/">
+      {% for name in data['animalnames'] %}
+          <option value="{{name}}" SELECTED>{{name}}</option>"
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <select name="zipcodes" method="GET" action="/">
+      {% for name in data['zipcodes'] %}
+          <option value="{{name}}" SELECTED>{{name}}</option>"
+      {% endfor %}
+    </select>
+  </div>
 </body>
 
 
