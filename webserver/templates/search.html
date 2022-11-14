@@ -31,6 +31,7 @@
       background-color: #f1f1f1;
     }
   </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -53,18 +54,24 @@
 
 
 <body>
+<div class="container">
   <h1>Animal Shelter Search</h1>
-  <button type="button" class="collapsible">View Animal Names</button>
+  <button type="button" class="collapsible">View Animals</button>
   <div class="content">
-    {% for n in data['animalnames'] %}
-    <div>{{n}}</div>
+    <div>shelterid animalid animalname animalsex animaltype age</div>
+    {% for n in data['animals'] %}
+    <div class="row">
+    <div class="col-2">{{n['shelterid']}}</div>
+    <div class="col-2">{{n['animalid']}}</div>
+    <div class="col-2">{{n['animalname']}}</div>
+    </div>
     {% endfor %}
     <br>
   </div>
   <button type="button" class="collapsible">View Locations</button>
   <div class="content">
-    {% for n in data['zipcodes'] %}
-    <div>{{n}}</div>
+    {% for n in data['locations'] %}
+    <div>Zipcode: {{n['zipcode']}} Address: {{n['address']}}</div>
     {% endfor %}
     <br>
   </div>
@@ -74,18 +81,26 @@
 
   <div>
     <select name="animalnames" method="GET" action="/">
-      {% for name in data['animalnames'] %}
-          <option value="{{name}}" SELECTED>{{name}}</option>"
+      {% for name in data['animals'] %}
+          <option value="{{name['animalname']}}" SELECTED>{{name['animalname']}}</option>"
       {% endfor %}
     </select>
   </div>
   <div>
     <select name="zipcodes" method="GET" action="/">
-      {% for name in data['zipcodes'] %}
-          <option value="{{name}}" SELECTED>{{name}}</option>"
+      {% for name in data['locations'] %}
+          <option value="{{name['zipcode']}}" SELECTED>{{name['zipcode']}}</option>"
       {% endfor %}
     </select>
   </div>
+  <div>
+    <select name="addresses" method="GET" action="/">
+      {% for name in data['locations'] %}
+          <option value="{{name['address']}}" SELECTED>{{name['address']}}</option>"
+      {% endfor %}
+    </select>
+  </div>
+</div>
 </body>
 
 

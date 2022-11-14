@@ -161,23 +161,15 @@ def index():
 @app.route('/search')
 def search():
   cursor = g.conn.execute("SELECT * FROM Animal")
-  n = []
-  for result in cursor:
-    print(result)
-    n.append(result['animalname']) 
+  animals = list(cursor)
   cursor.close()
 
   cursor = g.conn.execute("SELECT * FROM Location")
-  zipcodes = []
-  for result in cursor:
-    print(result)
-    zipcodes.append(result['zipcode'])  
+  locations = list(cursor)
   cursor.close()
-  # context = dict(data = n)
-  context = dict(data = {"animalnames": n, "zipcodes": zipcodes})
+  context = dict(data = {"animals": animals, "locations": locations})
   print(context)
-
-
+  
   return render_template("search.html", **context)
 
 
