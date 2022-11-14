@@ -56,49 +56,167 @@
 <body>
 <div class="container">
   <h1>Animal Shelter Search</h1>
+
+  <button type="button" class="collapsible">View Shelters</button>
+  <div class="content">
+    <div class="row">
+    {% for k in data['shelters'][0].keys() %}
+      <div class="col-3">{{k}}</div>
+    {% endfor %}
+   </div>
+
+    {% for n in data['shelters'] %}
+      <div class="row">
+      {% for k in data['shelters'][0].keys() %}
+        <div class="col-3">{{n[k]}}</div>
+      {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+
   <button type="button" class="collapsible">View Animals</button>
   <div class="content">
-    <div>shelterid animalid animalname animalsex animaltype age</div>
-    {% for n in data['animals'] %}
     <div class="row">
-    <div class="col-2">{{n['shelterid']}}</div>
-    <div class="col-2">{{n['animalid']}}</div>
-    <div class="col-2">{{n['animalname']}}</div>
-    </div>
+    {% for k in data['animals'][0].keys() %}
+      <div class="col-2">{{k}}</div>
     {% endfor %}
-    <br>
+   </div>
+
+    {% for n in data['animals'] %}
+      <div class="row">
+      {% for k in data['animals'][0].keys() %}
+        <div class="col-2">{{n[k]}}</div>
+      {% endfor %}
+      </div>
+    {% endfor %}
   </div>
+
+  <button type="button" class="collapsible">View Intakes</button>
+  <div class="content">
+    <div class="row">
+    {% for k in data['intakes'][0].keys() %}
+      <div class="col-2">{{k}}</div>
+    {% endfor %}
+   </div>
+
+    {% for n in data['intakes'] %}
+      <div class="row">
+      {% for k in data['intakes'][0].keys() %}
+        <div class="col-2">{{n[k]}}</div>
+      {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+
   <button type="button" class="collapsible">View Locations</button>
   <div class="content">
-    {% for n in data['locations'] %}
-    <div>Zipcode: {{n['zipcode']}} Address: {{n['address']}}</div>
+    <div class="row">
+    {% for k in data['locations'][0].keys() %}
+      <div class="col-4">{{k}}</div>
     {% endfor %}
-    <br>
+   </div>
+
+    {% for n in data['locations'] %}
+      <div class="row">
+      {% for k in data['locations'][0].keys() %}
+        <div class="col-4">{{n[k]}}</div>
+      {% endfor %}
+      </div>
+    {% endfor %}
   </div>
 
-  <p><a href="/">Go to the other page</a></p>
+  <button type="button" class="collapsible">View Outcomes</button>
+  <div class="content">
+    <div class="row">
+    {% for k in data['outcomes'][0].keys() %}
+      <div class="col-3">{{k}}</div>
+    {% endfor %}
+   </div>
 
+    {% for n in data['outcomes'] %}
+      <div class="row">
+      {% for k in data['outcomes'][0].keys() %}
+        <div class="col-3">{{n[k]}}</div>
+      {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
 
-  <div>
-    <select name="animalnames" method="GET" action="/">
-      {% for name in data['animals'] %}
-          <option value="{{name['animalname']}}" SELECTED>{{name['animalname']}}</option>"
-      {% endfor %}
-    </select>
+  <p><a href="/">Add or Modify Data</a></p>
+
+  <div class="row"> <div class="col">Custom Search</div></div>
+
+  <div class="row">
+    <div class="col-4">Shelter Name</div>
+    <div class="col-1">Type</div>
+    <div class="col-1">Sex</div>
+    <div class="col-2">Intake Location</div>
+    <div class="col-2">Intake Condition</div>
+    <div class="col-2">Outcome Type</div>
   </div>
-  <div>
-    <select name="zipcodes" method="GET" action="/">
-      {% for name in data['locations'] %}
-          <option value="{{name['zipcode']}}" SELECTED>{{name['zipcode']}}</option>"
-      {% endfor %}
-    </select>
+
+  <form method="POST" action="/submitsearch">
+  <div class="row">
+
+    <div class="col-4 form-group">
+      <select name="sheltername" method="GET" action="/">
+        <option value="Any"  SELECTED>Any</option>
+        {% for name in data['shelters'] %}
+            <option value="{{name['sheltername']}}" SELECTED>{{name['sheltername']}}</option>"
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="col-1 form-group">
+      <select name="animaltype" method="GET" action="/">
+          <option value="Any"  SELECTED>Any</option>
+          <option value="Dog" SELECTED>Dog</option>
+          <option value="Cat" SELECTED>Cat</option>
+          <option value="Capybara" SELECTED>Capybara</option>
+      </select>
+    </div>
+
+    <div class="col-1 form-group">
+      <select name="animalsex" method="GET" action="/">
+          <option value="Any"  SELECTED>Any</option>
+          <option value="Male" SELECTED>Male</option>
+          <option value="Female" SELECTED>Female</option>
+      </select>
+    </div>
+
+    <div class="col-2 form-group">
+      <select name="zipcode" method="GET" action="/">
+        <option value="Any"  SELECTED>Any</option>
+        {% for name in data['locations'] %}
+            <option value="{{name['zipcode']}}" SELECTED>{{name['zipcode']}}</option>"
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="col-2 form-group">
+      <select name="intakecondition" method="GET" action="/">
+        <option value="Any"  SELECTED>Any</option>
+        <option value="Normal"  SELECTED>Normal</option>
+        <option value="Sick"    SELECTED>Sick</option>
+        <option value="Injured" SELECTED>Injured</option>
+      </select>
+    </div>
+
+    <div class="col-2 form-group">
+      <select name="outcomesubtype" method="GET" action="/">
+        <option value="Any"  SELECTED>Any</option>
+        <option value="Rabies Risk" SELECTED>Rabies Risk</option>
+        <option value="Partner"     SELECTED>Partner</option>
+        <option value="Field"       SELECTED>Field</option>
+        <option value="Offsite"     SELECTED>Offsite</option>
+        <option value="Medical"     SELECTED>Medical</option>
+        <option value="Senior"      SELECTED>Senior</option>
+      </select>
+    </div>
   </div>
-  <div>
-    <select name="addresses" method="GET" action="/">
-      {% for name in data['locations'] %}
-          <option value="{{name['address']}}" SELECTED>{{name['address']}}</option>"
-      {% endfor %}
-    </select>
+  <div class="row"> <div class="col-4"></div> <div class="col"> <button type="submit" class="btn btn-primary">Submit</button> </div> <div class="col-4"></div> </div>
+  </form>
+
   </div>
 </div>
 </body>

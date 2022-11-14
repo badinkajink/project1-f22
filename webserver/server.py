@@ -38,11 +38,9 @@ app = Flask(__name__, template_folder=tmpl_dir)
 # Use the DB credentials you received by e-mail
 DB_USER = "wx2214"
 DB_PASSWORD = "0366"
-
 DB_SERVER = "w4111.cisxo09blonu.us-east-1.rds.amazonaws.com"
-
 DATABASEURI = "postgresql://"+DB_USER+":"+DB_PASSWORD+"@"+DB_SERVER+"/proj1part2"
-
+search_result = ""
 
 #
 # This line creates a database engine that knows how to connect to the URI above
@@ -160,16 +158,29 @@ def index():
 #
 @app.route('/search')
 def search():
+  global search_result
+  cursor = g.conn.execute("SELECT * FROM Shelter")
+  shelters = list(cursor)
+  cursor.close()
+
   cursor = g.conn.execute("SELECT * FROM Animal")
   animals = list(cursor)
+  cursor.close()
+
+  cursor = g.conn.execute("SELECT * FROM Intake")
+  intakes = list(cursor)
   cursor.close()
 
   cursor = g.conn.execute("SELECT * FROM Location")
   locations = list(cursor)
   cursor.close()
-  context = dict(data = {"animals": animals, "locations": locations})
-  print(context)
-  
+
+  cursor = g.conn.execute("SELECT * FROM Outcome")
+  outcomes = list(cursor)
+  cursor.close()
+
+  context = dict(data = {"shelters": shelters, "animals": animals, "intakes": intakes, "locations": locations, "outcomes": outcomes})
+
   return render_template("search.html", **context)
 
 
@@ -192,6 +203,22 @@ def addlocation():
   g.conn.execute(text(cmd), zipcode = int(zipcode), address = 'aa')
   return redirect('/search')
 
+# Example of adding new data to the database
+@app.route('/submitsearch', methods=['POST'])
+def submitsearch():
+  global search_result
+  dict = request.form
+  keys = request.form.keys()
+  print(keys)
+  # print(request.form.values)
+  query_dict = {}
+  for k in keys:
+    if dict[k] != 'Any':
+      query_dict[k] = 'a'
+  cursor = g.conn.execute("SELECT * FROM Location")
+  locations = list(cursor)
+  cursor.close()
+  return redirect('/search')
 
 @app.route('/login')
 def login():
