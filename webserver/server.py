@@ -20,10 +20,29 @@ from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 import psycopg2
 from flask import Flask, request, render_template, g, redirect, Response
+from flask import Blueprint
+from jinja2 import evalcontextfilter, Markup, escape
+import re
+
+
+# blueprint = Blueprint('custom_template_filters', __name__)
+# def register_template_filters(flask_app: Flask) -> None:
+#     flask_app.register_blueprint(blueprint)
+#     return None
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
+# register_template_filters(flask_app=app)
 
+@app.template_filter()
+@evalcontextfilter
+def newline_to_br(context, value: str) -> str:
+    result = "<br />".join(re.split(r'(?:\r\n|\r|\n){2,}', escape(value)))
+
+    if context.autoescape:
+        result = Markup(result)
+
+    return result
 
 
 # XXX: The Database URI should be in the format of: 
@@ -42,6 +61,7 @@ DB_PASSWORD = "0366"
 DB_SERVER = "w4111.cisxo09blonu.us-east-1.rds.amazonaws.com"
 DATABASEURI = "postgresql://"+DB_USER+":"+DB_PASSWORD+"@"+DB_SERVER+"/proj1part2"
 search_result = []
+query = ""
 
 #
 # This line creates a database engine that knows how to connect to the URI above
@@ -75,6 +95,7 @@ def before_request():
     import traceback; traceback.print_exc()
     g.conn = None
 
+# https://stackoverflow.com/questions/18662898/jinja-render-text-in-html-preserving-line-breaks
 @app.teardown_request
 def teardown_request(exception):
   """
@@ -85,7 +106,6 @@ def teardown_request(exception):
     g.conn.close()
   except Exception as e:
     pass
-
 
 #
 # @app.route is a decorator around index() that means:
@@ -160,6 +180,8 @@ def index():
 @app.route('/search')
 def search():
   global search_result
+  global query
+  print(query)
   cursor = g.conn.execute("SELECT * FROM Shelter")
   shelters = list(cursor)
   cursor.close()
@@ -181,7 +203,7 @@ def search():
   cursor.close()
 
   print(search_result)
-  context = dict(data = {"shelters": shelters, "animals": animals, "intakes": intakes, "locations": locations, "outcomes": outcomes, "searchresult": search_result})
+  context = dict(data = {"shelters": shelters, "animals": animals, "intakes": intakes, "locations": locations, "outcomes": outcomes, "searchresult": search_result, "query": query})
 
   return render_template("search.html", **context)
 
@@ -209,6 +231,7 @@ def addlocation():
 @app.route('/submitsearch', methods=['POST'])
 def submitsearch():
   global search_result
+  global query
   dict = request.form
   keys = request.form.keys()
   print(keys)
@@ -217,11 +240,19 @@ def submitsearch():
   for k in keys:
     if dict[k] != 'Any':
       query_dict[k] = 'a'
-  sex = dict['animalsex']
   psycopg2.paramstyle = 'named'
-  query = f"""SELECT distinct a.AnimalName, a.AnimalID
-  FROM Animal as a, Shelter as s, Intake as i, Outcome as o
-  WHERE a.AnimalSex LIKE {"'%Female%'" if sex == "Female" else ''} {"'% Male%'" if sex == "Male" else ''} {"'%ale%'" if sex == 'Any' else ''}"""
+  query = f"""SELECT distinct a.AnimalName, a.AnimalID, s.Sheltername, a.animaltype, a.animalsex, i.zipcode, i.intakeCondition, a.age
+  FROM Animal as a
+  INNER JOIN Shelter as s ON a.shelterid=s.shelterid
+  INNER JOIN Intake as i ON a.animalid=i.animalid
+  INNER JOIN Outcome as o ON a.animalid=o.animalid
+  WHERE a.AnimalSex {"LIKE '%Female%'" if dict['animalsex'] == "Female" else ''} {"LIKE '% Male%'" if dict['animalsex'] == "Male" else ''} {"IS NOT NULL" if dict['animalsex'] == 'Any' else ''}
+  AND s.ShelterName {"IS NOT NULL" if dict['sheltername'] == 'Any' else f"= '{dict['sheltername']}'"}
+  AND a.AnimalType {"IS NOT NULL" if dict['animaltype'] == 'Any' else f"= '{dict['animaltype']}'"}
+  AND i.zipcode {"IS NOT NULL" if dict['zipcode'] == 'Any' else f"= '{dict['zipcode']}'"}
+  AND i.intakecondition {"IS NOT NULL" if dict['intakecondition'] == 'Any' else f"= '{dict['intakecondition']}'"}
+  AND {"1=1" if dict['outcomesubtype'] == 'Any' else f"o.outcomesubtype = '{dict['intakecondition']}'"}
+  """
   print(query)
   cursor = g.conn.execute(text(query))
   result = list(cursor)

@@ -172,7 +172,6 @@
           <option value="Any"  SELECTED>Any</option>
           <option value="Dog" SELECTED>Dog</option>
           <option value="Cat" SELECTED>Cat</option>
-          <option value="Capybara" SELECTED>Capybara</option>
       </select>
     </div>
 
@@ -217,27 +216,28 @@
   <div class="row"> <div class="col-4"></div> <div class="col"> <button type="submit" class="btn btn-primary">Submit</button> </div> <div class="col-4"></div> </div>
   </form>
 
-  <div class="row"> <div class="col">Search Result</div></div>
+  <div class="row"> <div class="col">Search Result for: </div></div>
+  <div style="white-space: pre-wrap;">{{data['query']}}</div>
 
   <div class="row">
-    <div class="col-4">Shelter Name</div>
+    <div class="col-1">Name</div>
+    <div class="col-1">ID</div>
+    <div class="col-1">Shelter Name</div>
     <div class="col-1">Type</div>
     <div class="col-1">Sex</div>
-    <div class="col-2">Intake Location</div>
-    <div class="col-2">Intake Condition</div>
+    <div class="col-1">Intake Location</div>
+    <div class="col-1">Intake Condition</div>
+    <div class="col-1">Age</div>
     <div class="col-2">Outcome Type</div>
   </div>
 
+  {% for n in data['searchresult'] %}
   <div class="row">
-    {% for n in data['searchresult'] %}
-    <div class="row">
-      {{n}}
-    <!-- {% for k in data['outcomes'][0].keys() %}
-      <div class="col-3">{{n[k]}}</div>
-    {% endfor %} -->
-    </div>
+    {% for k in data['searchresult'][0].keys() %}
+      <div class="col-1">{{n[k]}}</div>
     {% endfor %}
   </div>
+  {% endfor %}
 
   </div>
 
