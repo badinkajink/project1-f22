@@ -218,6 +218,72 @@ def submitsearch():
   cursor = g.conn.execute("SELECT * FROM Location")
   locations = list(cursor)
   cursor.close()
+  
+@app.route('/addShelter', methods=['POST'])
+def addShelter():
+  ShelterID = request.form['ShelterID']
+  print(ShelterID)
+  ShelterLoc = request.form['ShelterLoc']
+  print(ShelterLoc)
+  Zip = request.form['Zip']
+  print(Zip)
+  Name = request.form['Name']
+  print(Name)
+  
+  cmd = 'INSERT INTO Location VALUES (:ShelterID, :ShelterLoc,:Zip,:Name);'
+  g.conn.execute(text(cmd), ShelterID = int(ShelterID), ShelterLoc= 'location', Zip = int(Zip), Name = 'Name') 
+  return redirect('/search')
+
+@app.route('/addAnimal', methods=['POST'])
+def addAnimal():
+  AnimalID = request.form['AnimalID']
+  print(AnimalID)
+  AnimalName = request.form['AnimalName']
+  print(AnimalName)
+  Type = request.form['Type']
+  print(Type)
+  Sex = request.form['Sex']
+  print(Sex)
+  Breed = request.form['Breed']
+  print(Breed)
+  Foundtime = request.form['Foundtime']
+  print(Foundtime)
+  
+  cmd = 'INSERT INTO Location VALUES (:AnimalID, :AnimalName,:Type,:Sex,:Breed, :Foundtime);'
+  g.conn.execute(text(cmd), AnimalID = int(AnimalID), AnimalName= 'AnimalName', Type = 'Type', Sex = 'Sex', Breed='Breed',Foundtime='Foundtime' ) 
+  return redirect('/search')
+
+@app.route('/addIntake', methods=['POST'])
+def addIntake():
+  IntakeID = request.form['IntakeID']
+  print(IntakeID)
+  VariousIntakeData = request.form['VariousIntakeData']
+  print(VariousIntakeData)
+    
+  cmd = 'INSERT INTO Location VALUES (:IntakeID, :VariousIntakedata);'
+  g.conn.execute(text(cmd), IntakeID = int(IntakeID), VariousIntakedata= 'VariousIntakedata') 
+  return redirect('/search')
+
+@app.route('/addLocation', methods=['POST'])
+def addLocation():
+  Location = request.form['Location']
+  print(Location)
+  LocationAddress = request.form['LocationAddress']
+  print(LocationAddress)
+    
+  cmd = 'INSERT INTO Location VALUES (:Location, :LocationAddress);'
+  g.conn.execute(text(cmd), Location = 'Location', LocationAddress= 'LocationAddress') 
+  return redirect('/search')
+
+@app.route('/addOutcome', methods=['POST'])
+def addOutcome():
+  OutcomeDate = request.form['OutcomeDate']
+  print(OutcomeDate)
+  Subtype = request.form['Subtype']
+  print(Subtype)
+    
+  cmd = 'INSERT INTO Location VALUES (:OutcomeDate, :Subtype);'
+  g.conn.execute(text(cmd), OutcomeDate = 'OutcomeDate', Subtype= 'Subtype') 
   return redirect('/search')
 
 @app.route('/login')
