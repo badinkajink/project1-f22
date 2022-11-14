@@ -24,7 +24,7 @@
 
 <form method="get"></form>
 <table class=art>
-  <tr><td id="one">
+  <tr><form action="/addShelter" method="post"><td id="one">
     <p>Please Note: ShelterID, ShelterLoc, Zip, Name are required</p>
     <label for="ShelterID"><b>ShelterID:</b></label>
     <input type="text" id="ShelterID" placeholder="ShelterID" required>
@@ -37,9 +37,9 @@
       <label for="Name">Name:</label>
       <input type="text" id="Name" placeholder="Name" required>
       <p></p>
-      <input type="submit" name="" value="Submit Shelter">
+      <input type="submit" name="" value="Submit Shelter"></form>
   </td></tr>
-  <tr><td id="two">
+  <tr><form action="/addAnimal" method="post"><td id="two">
     <p>Please Note: AnimalID,AnimalName, Type, Sex, Breed, Foundtime,IntakeID, Various Intake data, Location, Location address are required</p>
     <label for="AnimalID"><b>AnimalID:</b></label>
     <input type="text" id="AnimalID" placeholder="AnimalID" required>
@@ -61,10 +61,11 @@
     <label for="Foundtime">Foundtime:</label>
     <input type="text" id="Foundtime" placeholder="Foundtime" required>
       <p></p>
-      <input type="submit" name="" value="Submit Animal">
+      <input type="submit" name="" value="Submit Animal"></form>
       <br /> 
       <br /> 
-
+    
+    <form action="/addIntake" method="post">
     <label for="IntakeID"><b>IntakeID:</b></label>
     <input type="text" id="IntakeID" placeholder="IntakeID" required>
     <br /> 
@@ -72,9 +73,11 @@
     <label for="Various Intake data">Various Intake data:</label>
     <input type="text" id="Various Intake data" placeholder="Various Intake data" required>
         <p></p>
-        <input type="submit" name="" value="Submit Intake">
+        <input type="submit" name="" value="Submit Intake"></form>
      <br /> 
      <br /> 
+    
+    <form action="/addLocation" method="post">
     <label for="Location"><b>Location:</b></label>
     <input type="text" id="Location" placeholder="Location" required>
     <br /> 
@@ -82,12 +85,12 @@
     <label for="Location address">Location address:</label>
     <input type="text" id="Location address" placeholder="Location address" required>
         <p></p>
-        <input type="submit" name="" value="Submit Location">
+        <input type="submit" name="" value="Submit Location"></form>
       <br /> 
       <br /> 
 
   </td></tr>  
-  <tr><td id="three">
+  <tr><form action="/addOutcome" method="post"><td id="three">
     <label for="OutcomeID"><b>Outcome:</b></label>
     <input type="text" id="OutcomeID" placeholder="OutcomeID" optional>
     <br /> 
@@ -99,9 +102,10 @@
       <input type="text" id="Subtype" placeholder="Subtype" optional>
 
       <p></p>
-      <input type="submit" name="" value="Submit Outcome">
+      <input type="submit" name="" value="Submit Outcome"></form>
 
-  </td></tr>  
+  </td></tr>
+ </table> 
 </div>
 </body>
 
