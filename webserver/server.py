@@ -289,7 +289,7 @@ def addShelter():
   print(Name)
   
   cmd = 'INSERT INTO Location VALUES (:ShelterID, :ShelterLoc,:Zip,:Name);'
-  g.conn.execute(text(cmd), ShelterID = int(ShelterID), ShelterLoc= 'location', Zip = int(Zip), Name = 'Name') 
+  g.conn.execute(text(cmd), ShelterID = int(ShelterID), ShelterLoc= ShelterLoc, Zip = int(Zip), Name = Name) 
   return redirect('/search')
 
 @app.route('/addAnimal', methods=['POST'])
@@ -308,7 +308,7 @@ def addAnimal():
   print(Foundtime)
   
   cmd = 'INSERT INTO Location VALUES (:AnimalID, :AnimalName,:Type,:Sex,:Breed, :Foundtime);'
-  g.conn.execute(text(cmd), AnimalID = int(AnimalID), AnimalName= 'AnimalName', Type = 'Type', Sex = 'Sex', Breed='Breed',Foundtime='Foundtime' ) 
+  g.conn.execute(text(cmd), AnimalID = int(AnimalID), AnimalName= AnimalName, Type = Type, Sex = Sex, Breed=Breed,Foundtime=Foundtime) 
   return redirect('/search')
 
 @app.route('/addIntake', methods=['POST'])
@@ -319,7 +319,7 @@ def addIntake():
   print(VariousIntakeData)
     
   cmd = 'INSERT INTO Location VALUES (:IntakeID, :VariousIntakedata);'
-  g.conn.execute(text(cmd), IntakeID = int(IntakeID), VariousIntakedata= 'VariousIntakedata') 
+  g.conn.execute(text(cmd), IntakeID = int(IntakeID), VariousIntakedata= VariousIntakedata) 
   return redirect('/search')
 
 @app.route('/addLocation', methods=['POST'])
@@ -340,13 +340,15 @@ def addLocation():
 
 @app.route('/addOutcome', methods=['POST'])
 def addOutcome():
+  OutcomeID = request.form['OutcomeID']
+  print(OutcomeID)
   OutcomeDate = request.form['OutcomeDate']
   print(OutcomeDate)
   Subtype = request.form['Subtype']
   print(Subtype)
     
-  cmd = 'INSERT INTO Location VALUES (:OutcomeDate, :Subtype);'
-  g.conn.execute(text(cmd), OutcomeDate = 'OutcomeDate', Subtype= 'Subtype') 
+  cmd = 'INSERT INTO Location VALUES (:OutcomeID, :OutcomeDate, :Subtype);'
+  g.conn.execute(text(cmd), OutcomeID= OutcomeID, OutcomeDate = OutcomeDate, Subtype= Subtype) 
   return redirect('/search')
 
 if __name__ == "__main__":
