@@ -185,14 +185,6 @@ def write():
   #
   return render_template("index.html", **context)
 
-#
-# This is an example of a different path.  You can see it at
-# 
-#     localhost:8111/another
-#
-# notice that the functio name is another() rather than index()
-# the functions for each app.route needs to have different names
-#
 @app.route('/search')
 def search():
   global search_result
@@ -268,16 +260,18 @@ def addShelter():
   Name = request.form['Name']
   print(Name)
   
-  cmd = 'INSERT INTO Location VALUES (:ShelterID, :ShelterLoc,:Zip,:Name);'
+  cmd = 'INSERT INTO Shelter VALUES (:ShelterID, :ShelterLoc,:ShelterZip,:ShelterName);'
   try:
-    g.conn.execute(text(cmd), ShelterID =ShelterID, ShelterLoc= ShelterLoc, Zip =Zip, Name = Name) 
+    g.conn.execute(text(cmd), ShelterID=ShelterID, ShelterLoc=ShelterLoc, ShelterZip=Zip, ShelterName=Name) 
     return redirect('/search')
-  except exc.SQLAlchemyError:
+  except exc.SQLAlchemyError as e:
+    print(e)
     return render_template('error.html')
 
 
 @app.route('/addAnimal', methods=['POST'])
 def addAnimal():
+  ShelterID = request.form['ShelterID']
   AnimalID = request.form['AnimalID']
   print(AnimalID)
   AnimalName = request.form['AnimalName']
@@ -286,33 +280,32 @@ def addAnimal():
   print(Type)
   Sex = request.form['Sex']
   print(Sex)
-  Breed = request.form['Breed']
-  print(Breed)
-  Foundtime = request.form['Foundtime']
-  print(Foundtime)
-  
-  cmd = 'INSERT INTO Location VALUES (:AnimalID, :AnimalName,:Type,:Sex,:Breed, :Foundtime);'
+  Age = request.form['Age']
+
+  cmd = 'INSERT INTO Animal VALUES (:ShelterID, :AnimalID, :AnimalName,:AnimalType,:AnimalSex,:Age);'
   try:
-    g.conn.execute(text(cmd), AnimalID =AnimalID, AnimalName= AnimalName, Type = Type, Sex = Sex, Breed=Breed,Foundtime=Foundtime) 
+    g.conn.execute(text(cmd), ShelterID=ShelterID, AnimalID =AnimalID, AnimalName= AnimalName, AnimalType = Type, AnimalSex = Sex, Age=Age) 
     return redirect('/search')
-  except exc.SQLAlchemyError:
-    print(exc.SQLAlchemyError)
+  except exc.SQLAlchemyError as e:
+    print(e)
     return render_template('error.html')
 
 @app.route('/addIntake', methods=['POST'])
 def addIntake():
   IntakeID = request.form['IntakeID']
   print(IntakeID)
-  VariousIntakeData = request.form['VariousIntakeData']
-  print(VariousIntakeData)
+  AnimalID = request.form['AnimalID']
+  print(AnimalID)
+  IntakeDate = request.form['IntakeDate']
+  IntakeCondition = request.form['IntakeCondition']
+  zipcode = request.form['zipcode']
     
-  cmd = 'INSERT INTO Location VALUES (:IntakeID, :VariousIntakedata);'
+  cmd = 'INSERT INTO Intake VALUES (:AnimalID, :IntakeID, :IntakeDate, :IntakeCondition, :zipcode);'
   try:
-    g.conn.execute(text(cmd), IntakeID = IntakeID, VariousIntakedata= VariousIntakeData) 
+    g.conn.execute(text(cmd), AnimalID=AnimalID, IntakeID = IntakeID, IntakeDate=IntakeDate, IntakeCondition=IntakeCondition, zipcode=zipcode) 
     return redirect('/search')
-  except exc.SQLAlchemyError:
-    error = True
-    print(exc.SQLAlchemyError)
+  except exc.SQLAlchemyError as e:
+    print(e)
     return render_template('error.html')
 
 
@@ -328,27 +321,28 @@ def addLocation():
   try:
     g.conn.execute(text(cmd), location = Location, address= LocationAddress)
     return redirect('/search')
-  except exc.SQLAlchemyError:
+  except exc.SQLAlchemyError as e:
     error = True
-    print(exc.SQLAlchemyError)
+    print(e)
     return render_template('error.html')
 
 @app.route('/addOutcome', methods=['POST'])
 def addOutcome():
+  AnimalID = request.form['AnimalID']
   OutcomeID = request.form['OutcomeID']
   print(OutcomeID)
   OutcomeDate = request.form['OutcomeDate']
   print(OutcomeDate)
-  Subtype = request.form['Subtype']
+  Subtype = request.form['OutcomeSubtype']
   print(Subtype)
     
-  cmd = 'INSERT INTO Outcome VALUES (:OutcomeID, :OutcomeDate, :Subtype);'
+  cmd = 'INSERT INTO Outcome VALUES (:AnimalID, :OutcomeID, :OutcomeDate, :OutcomeSubtype);'
   try:
-    g.conn.execute(text(cmd), OutcomeID=OutcomeID, OutcomeDate = OutcomeDate, Subtype=Subtype) 
+    g.conn.execute(text(cmd), AnimalID=AnimalID, OutcomeID=OutcomeID, OutcomeDate = OutcomeDate, OutcomeSubtype=Subtype) 
     return redirect('/search')
-  except exc.SQLAlchemyError:
+  except exc.SQLAlchemyError as e:
     error = True
-    print(exc.SQLAlchemyError)
+    print(e)
     return render_template('error.html')
 
 if __name__ == "__main__":

@@ -41,6 +41,10 @@
 
     <form action="/addAnimal" method="post"><td id="two">
     <p>Please Note: AnimalID,AnimalName, Type, Sex, Breed, Foundtime,IntakeID, Various Intake data, Location, Location address are required</p>
+    <label for="ShelterID"><b>ShelterID:</b></label>
+    <input type="text" name ="ShelterID" id="ShelterID" placeholder="ShelterID" required>
+    <br /> 
+
     <label for="AnimalID"><b>AnimalID:</b></label>
     <input type="text" name ="AnimalID" id="AnimalID" placeholder="AnimalID" required>
     <br /> 
@@ -55,11 +59,9 @@
     <label for="Sex">Sex:</label>
     <input type="text" name="Sex" id="=Sex" placeholder="Sex" required>
 
-    <label for="Breed">Breed:</label>
-    <input type="text" name="Breed" id="Breed" placeholder="Breed" required>
+    <label for="Age">Age:</label>
+    <input type="text" name="Age" id="Age" placeholder="Age" required>
 
-    <label for="Foundtime">Foundtime:</label>
-    <input type="text" name= "Foundtime" id="Foundtime" placeholder="Foundtime" required>
       <p></p>
       <button type="submit">Submit Animal</button>
     </form>
@@ -68,12 +70,26 @@
       <br /> 
     
     <form action="/addIntake" method="post">
+    <label for="AnimalID"><b>AnimalID:</b></label>
+    <input type="AnimalID" name="AnimalID" id="AnimalID" placeholder="AnimalID" required>
+    <br /> 
+
     <label for="IntakeID"><b>IntakeID:</b></label>
     <input type="text" name="IntakeID" id="IntakeID" placeholder="IntakeID" required>
     <br /> 
 
-    <label for="Various Intake data">Various Intake data:</label>
-    <input type="text" name="VariousIntakeData" id="Various Intake data" placeholder="Various Intake data" required>
+    <label for="IntakeDate"><b>IntakeDate:</b></label>
+    <input type="text" name="IntakeDate" id="IntakeDate" placeholder="IntakeDate" required>
+    <br /> 
+
+    <label for="IntakeCondition"><b>IntakeCondition:</b></label>
+    <input type="text" name="IntakeCondition" id="IntakeCondition" placeholder="IntakeCondition" required>
+    <br /> 
+
+    <label for="Location Zipcode"><b>Location Zipcode:</b></label>
+    <input type="text" name="zipcode" id="zipcode" placeholder="Location Zipcode" required>
+    <br /> 
+
         <p></p>
         <button type="submit">Submit Intake</button>
     </form>
@@ -81,8 +97,8 @@
      <br /> 
 
     <form action="/addLocation" method="post">
-      <label for="Location"><b>Location:</b></label>
-      <input type="text" name="location" id="Location" placeholder="Location" required>
+      <label for="Location Zipcode"><b>Location:</b></label>
+      <input type="text" name="location" id="Location" placeholder="Location Zipcode" required>
       <br /> 
 
       <label for="Location address">Location address:</label>
@@ -97,15 +113,19 @@
 
   </td></tr>  
   <tr><form action="/addOutcome" method="post"><td id="three">
-    <label for="OutcomeID"><b>Outcome:</b></label>
+    <label for="AnimalID"><b>AnimalID:</b></label>
+    <input type="text" name="AnimalID" id="AnimalID" placeholder="AnimalID" optional>
+    <br /> 
+
+    <label for="OutcomeID"><b>OutcomeID:</b></label>
     <input type="text" name="OutcomeID" id="OutcomeID" placeholder="OutcomeID" optional>
     <br /> 
 
     <label for="Outcome date">Outcome date:</label>
       <input type="text" name="OutcomeDate" id="Outcome date" placeholder="Outcome date" optional>
 
-      <label for="Subtype">Subtype:</label>
-      <input type="text" name="Subtype" id="Subtype" placeholder="Subtype" optional>
+      <label for="OutcomeSubtype">Outcome Type:</label>
+      <input type="text" name="OutcomeSubtype" id="Subtype" placeholder="Outcome Type" optional>
 
       <p></p>
       <button type="submit">Submit Outcome</button>
