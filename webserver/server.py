@@ -50,7 +50,8 @@ DB_SERVER = "w4111.cisxo09blonu.us-east-1.rds.amazonaws.com"
 DATABASEURI = "postgresql://"+DB_USER+":"+DB_PASSWORD+"@"+DB_SERVER+"/proj1part2"
 search_result = []
 query = ""
-
+passphrase = "admin"
+loggedin = False
 #
 # This line creates a database engine that knows how to connect to the URI above
 #
@@ -95,6 +96,20 @@ def teardown_request(exception):
   except Exception as e:
     pass
 
+@app.route('/')
+def root():
+  return redirect('/write')
+
+
+# very crude login page via:
+# https://www.reddit.com/r/flask/comments/k1bvw4/password_protect_pages/
+def password_prompt(message):
+    return f'''
+                <form action="/write" method='post'>
+                  <label for="password">{message}:</label><br>
+                  <input type="password" id="password" name="password" value=""><br>
+                  <input type="submit" value="Submit">
+                </form>'''
 #
 # @app.route is a decorator around index() that means:
 #   run index() whenever the user tries to access the "/" path using a GET request
@@ -108,8 +123,9 @@ def teardown_request(exception):
 # see for routing: http://flask.pocoo.org/docs/0.10/quickstart/#routing
 # see for decorators: http://simeonfranklin.com/blog/2012/jul/1/python-decorators-in-12-steps/
 #
-@app.route('/')
-def index():
+@app.route('/write', methods=['GET', 'POST'])
+def write():
+  global loggedin
   """
   request is a special object that Flask provides to access web request information:
 
@@ -119,7 +135,16 @@ def index():
 
   See its API: http://flask.pocoo.org/docs/0.10/api/#incoming-request-data
   """
-
+  print(request.method)
+  if not loggedin:
+    if request.method == 'GET':
+        return password_prompt("Admin password:")
+    elif request.method == 'POST':
+        if request.form['password'] != passphrase:
+            return password_prompt("Invalid password, try again. Admin password:")
+        else:
+          loggedin = True
+      
   # DEBUG: this is debugging code to see what request looks like
   print(request.args)
   # example of a database query
@@ -203,7 +228,7 @@ def add():
   print(name)
   cmd = 'INSERT INTO test(name) VALUES (:name1), (:name2)'
   g.conn.execute(text(cmd), name1 = name, name2 = name)
-  return redirect('/')
+  return redirect('/write')
 
 
 # Example of adding new data to the database
@@ -316,12 +341,6 @@ def addOutcome():
   cmd = 'INSERT INTO Location VALUES (:OutcomeDate, :Subtype);'
   g.conn.execute(text(cmd), OutcomeDate = 'OutcomeDate', Subtype= 'Subtype') 
   return redirect('/search')
-
-@app.route('/login')
-def login():
-    abort(401)
-    this_is_never_executed()
-
 
 if __name__ == "__main__":
   import click
