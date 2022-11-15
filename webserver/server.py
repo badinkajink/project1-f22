@@ -223,26 +223,6 @@ def search():
 
   return render_template("search.html", **context)
 
-
-# Example of adding new data to the database
-@app.route('/add', methods=['POST'])
-def add():
-  name = request.form['name']
-  print(name)
-  cmd = 'INSERT INTO test(name) VALUES (:name1), (:name2)'
-  g.conn.execute(text(cmd), name1 = name, name2 = name)
-  return redirect('/write')
-
-
-# Example of adding new data to the database
-@app.route('/addlocation', methods=['POST'])
-def addlocation():
-  zipcode = request.form['zipcode']
-  print(zipcode)
-  cmd = 'INSERT INTO Location VALUES (:zipcode, :address);'
-  g.conn.execute(text(cmd), zipcode = int(zipcode), address = 'aa')
-  return redirect('/search')
-
 # Example of adding new data to the database
 @app.route('/submitsearch', methods=['POST'])
 def submitsearch():
@@ -289,8 +269,12 @@ def addShelter():
   print(Name)
   
   cmd = 'INSERT INTO Location VALUES (:ShelterID, :ShelterLoc,:Zip,:Name);'
-  g.conn.execute(text(cmd), ShelterID = int(ShelterID), ShelterLoc= ShelterLoc, Zip = int(Zip), Name = Name) 
-  return redirect('/search')
+  try:
+    g.conn.execute(text(cmd), ShelterID =ShelterID, ShelterLoc= ShelterLoc, Zip =Zip, Name = Name) 
+    return redirect('/search')
+  except exc.SQLAlchemyError:
+    return render_template('error.html')
+
 
 @app.route('/addAnimal', methods=['POST'])
 def addAnimal():
@@ -308,8 +292,12 @@ def addAnimal():
   print(Foundtime)
   
   cmd = 'INSERT INTO Location VALUES (:AnimalID, :AnimalName,:Type,:Sex,:Breed, :Foundtime);'
-  g.conn.execute(text(cmd), AnimalID = int(AnimalID), AnimalName= AnimalName, Type = Type, Sex = Sex, Breed=Breed,Foundtime=Foundtime) 
-  return redirect('/search')
+  try:
+    g.conn.execute(text(cmd), AnimalID =AnimalID, AnimalName= AnimalName, Type = Type, Sex = Sex, Breed=Breed,Foundtime=Foundtime) 
+    return redirect('/search')
+  except exc.SQLAlchemyError:
+    print(exc.SQLAlchemyError)
+    return render_template('error.html')
 
 @app.route('/addIntake', methods=['POST'])
 def addIntake():
@@ -319,8 +307,14 @@ def addIntake():
   print(VariousIntakeData)
     
   cmd = 'INSERT INTO Location VALUES (:IntakeID, :VariousIntakedata);'
-  g.conn.execute(text(cmd), IntakeID = int(IntakeID), VariousIntakedata= VariousIntakedata) 
-  return redirect('/search')
+  try:
+    g.conn.execute(text(cmd), IntakeID = IntakeID, VariousIntakedata= VariousIntakeData) 
+    return redirect('/search')
+  except exc.SQLAlchemyError:
+    error = True
+    print(exc.SQLAlchemyError)
+    return render_template('error.html')
+
 
 @app.route('/addLocation', methods=['POST'])
 def addLocation():
@@ -336,6 +330,7 @@ def addLocation():
     return redirect('/search')
   except exc.SQLAlchemyError:
     error = True
+    print(exc.SQLAlchemyError)
     return render_template('error.html')
 
 @app.route('/addOutcome', methods=['POST'])
@@ -347,9 +342,14 @@ def addOutcome():
   Subtype = request.form['Subtype']
   print(Subtype)
     
-  cmd = 'INSERT INTO Location VALUES (:OutcomeID, :OutcomeDate, :Subtype);'
-  g.conn.execute(text(cmd), OutcomeID= OutcomeID, OutcomeDate = OutcomeDate, Subtype= Subtype) 
-  return redirect('/search')
+  cmd = 'INSERT INTO Outcome VALUES (:OutcomeID, :OutcomeDate, :Subtype);'
+  try:
+    g.conn.execute(text(cmd), OutcomeID=OutcomeID, OutcomeDate = OutcomeDate, Subtype=Subtype) 
+    return redirect('/search')
+  except exc.SQLAlchemyError:
+    error = True
+    print(exc.SQLAlchemyError)
+    return render_template('error.html')
 
 if __name__ == "__main__":
   import click
