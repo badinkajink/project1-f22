@@ -17,6 +17,7 @@ Read about it online.
 
 import os
 from sqlalchemy import *
+from sqlalchemy import exc
 from sqlalchemy.pool import NullPool
 import psycopg2
 from flask import Flask, request, render_template, g, redirect, Response
@@ -52,6 +53,8 @@ search_result = []
 query = ""
 passphrase = "admin"
 loggedin = False
+error = False
+
 #
 # This line creates a database engine that knows how to connect to the URI above
 #
@@ -328,8 +331,12 @@ def addLocation():
   print(LocationAddress)
     
   cmd = 'INSERT INTO Location VALUES (:location, :address);'
-  g.conn.execute(text(cmd), location = Location, address= LocationAddress) 
-  return redirect('/search')
+  try:
+    g.conn.execute(text(cmd), location = Location, address= LocationAddress)
+    return redirect('/search')
+  except exc.SQLAlchemyError:
+    error = True
+    return render_template('error.html')
 
 @app.route('/addOutcome', methods=['POST'])
 def addOutcome():
