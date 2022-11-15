@@ -54,6 +54,7 @@ query = ""
 passphrase = "admin"
 loggedin = False
 error = False
+database = {}
 
 #
 # This line creates a database engine that knows how to connect to the URI above
@@ -113,22 +114,36 @@ def password_prompt(message):
                   <input type="password" id="password" name="password" value=""><br>
                   <input type="submit" value="Submit">
                 </form>'''
-#
-# @app.route is a decorator around index() that means:
-#   run index() whenever the user tries to access the "/" path using a GET request
-#
-# If you wanted the user to go to e.g., localhost:8111/foobar/ with POST or GET then you could use
-#
-#       @app.route("/foobar/", methods=["POST", "GET"])
-#
-# PROTIP: (the trailing / in the path is important)
-# 
-# see for routing: http://flask.pocoo.org/docs/0.10/quickstart/#routing
-# see for decorators: http://simeonfranklin.com/blog/2012/jul/1/python-decorators-in-12-steps/
-#
+
+def get_data():
+  global database
+  cursor = g.conn.execute("SELECT * FROM Shelter")
+  shelters = list(cursor)
+  cursor.close()
+
+  cursor = g.conn.execute("SELECT * FROM Animal")
+  animals = list(cursor)
+  cursor.close()
+
+  cursor = g.conn.execute("SELECT * FROM Intake")
+  intakes = list(cursor)
+  cursor.close()
+
+  cursor = g.conn.execute("SELECT * FROM Location")
+  locations = list(cursor)
+  cursor.close()
+
+  cursor = g.conn.execute("SELECT * FROM Outcome")
+  outcomes = list(cursor)
+  cursor.close()
+
+  database = {"shelters": shelters, "animals": animals, "intakes": intakes, "locations": locations, "outcomes": outcomes, "searchresult": search_result}
+
 @app.route('/write', methods=['GET', 'POST'])
 def write():
   global loggedin
+  global database
+  get_data()
   """
   request is a special object that Flask provides to access web request information:
 
@@ -249,8 +264,22 @@ def submitsearch():
   search_result = result
   return redirect('/search')
 
+def check_existence(table, idname, id):
+  # check existence
+  cmd = f'SELECT COUNT(1) FROM {table} WHERE {idname} = :{idname}'
+  exists = 0
+  try:
+    cursor = g.conn.execute(text(cmd), idname = id)
+    exists = cursor.fetchall()[0][0]
+    cursor.close()
+    return exists
+  except exc.SQLAlchemyError as e:
+    print(e)
+    return render_template('error.html')
+
 @app.route('/addShelter', methods=['POST'])
 def addShelter():
+  global database
   ShelterID = request.form['ShelterID']
   print(ShelterID)
   ShelterLoc = request.form['ShelterLoc']
@@ -260,14 +289,27 @@ def addShelter():
   Name = request.form['Name']
   print(Name)
   
-  cmd = 'INSERT INTO Shelter VALUES (:ShelterID, :ShelterLoc,:ShelterZip,:ShelterName);'
-  try:
-    g.conn.execute(text(cmd), ShelterID=ShelterID, ShelterLoc=ShelterLoc, ShelterZip=Zip, ShelterName=Name) 
-    return redirect('/search')
-  except exc.SQLAlchemyError as e:
-    print(e)
-    return render_template('error.html')
+  # check existence
+  exists = check_existence("Shelter", "ShelterID", ShelterID)
 
+  if not exists:
+    cmd = 'INSERT INTO Shelter VALUES (:ShelterID, :ShelterLoc,:ShelterZip,:ShelterName);'
+    try:
+      g.conn.execute(text(cmd), ShelterID=ShelterID, ShelterLoc=ShelterLoc, ShelterZip=Zip, ShelterName=Name) 
+      return redirect('/search')
+    except exc.SQLAlchemyError as e:
+      print(e)
+      if e == psycopg2.errors.UniqueViolation:
+        print("yes")
+      return render_template('error.html')
+  else:
+    cmd = f'UPDATE Shelter SET ShelterLoc= :ShelterLoc, ShelterZip= :ShelterZip, ShelterName= :ShelterName WHERE ShelterID={ShelterID};'
+    try:
+      g.conn.execute(text(cmd), ShelterLoc=ShelterLoc, ShelterZip=Zip, ShelterName=Name) 
+      return redirect('/search')
+    except exc.SQLAlchemyError as e:
+      print(e)
+      return render_template('error.html')   
 
 @app.route('/addAnimal', methods=['POST'])
 def addAnimal():
@@ -282,13 +324,25 @@ def addAnimal():
   print(Sex)
   Age = request.form['Age']
 
-  cmd = 'INSERT INTO Animal VALUES (:ShelterID, :AnimalID, :AnimalName,:AnimalType,:AnimalSex,:Age);'
-  try:
-    g.conn.execute(text(cmd), ShelterID=ShelterID, AnimalID =AnimalID, AnimalName= AnimalName, AnimalType = Type, AnimalSex = Sex, Age=Age) 
-    return redirect('/search')
-  except exc.SQLAlchemyError as e:
-    print(e)
-    return render_template('error.html')
+  # check existence
+  exists = check_existence("Animal", "AnimalID", AnimalID)
+
+  if not exists:
+    cmd = 'INSERT INTO Animal VALUES (:ShelterID, :AnimalID, :AnimalName,:AnimalType,:AnimalSex,:Age);'
+    try:
+      g.conn.execute(text(cmd), ShelterID=ShelterID, AnimalID =AnimalID, AnimalName= AnimalName, AnimalType = Type, AnimalSex = Sex, Age=Age) 
+      return redirect('/search')
+    except exc.SQLAlchemyError as e:
+      print(e)
+      return render_template('error.html')
+  else:
+    cmd = f'UPDATE Animal Set ShelterID=:ShelterID, AnimalName=:AnimalName, AnimalType=:AnimalType, AnimalSex=:AnimalSex, Age=:Age WHERE AnimalID=:AnimalID;'
+    try:
+      g.conn.execute(text(cmd), AnimalID=AnimalID, ShelterID=ShelterID, AnimalName= AnimalName, AnimalType = Type, AnimalSex = Sex, Age=Age) 
+      return redirect('/search')
+    except exc.SQLAlchemyError as e:
+      print(e)
+      return render_template('error.html')   
 
 @app.route('/addIntake', methods=['POST'])
 def addIntake():
@@ -299,14 +353,25 @@ def addIntake():
   IntakeDate = request.form['IntakeDate']
   IntakeCondition = request.form['IntakeCondition']
   zipcode = request.form['zipcode']
-    
-  cmd = 'INSERT INTO Intake VALUES (:AnimalID, :IntakeID, :IntakeDate, :IntakeCondition, :zipcode);'
-  try:
-    g.conn.execute(text(cmd), AnimalID=AnimalID, IntakeID = IntakeID, IntakeDate=IntakeDate, IntakeCondition=IntakeCondition, zipcode=zipcode) 
-    return redirect('/search')
-  except exc.SQLAlchemyError as e:
-    print(e)
-    return render_template('error.html')
+
+  exists = check_existence("Intake", "IntakeID", IntakeID)
+
+  if not exists:
+    cmd = 'INSERT INTO Intake VALUES (:AnimalID, :IntakeID, :IntakeDate, :IntakeCondition, :zipcode);'
+    try:
+      g.conn.execute(text(cmd), AnimalID=AnimalID, IntakeID = IntakeID, IntakeDate=IntakeDate, IntakeCondition=IntakeCondition, zipcode=zipcode) 
+      return redirect('/search')
+    except exc.SQLAlchemyError as e:
+      print(e)
+      return render_template('error.html')
+  else:
+    cmd = 'UPDATE Intake Set AnimalID=:AnimalID, IntakeDate=:IntakeDate, IntakeCondition=:IntakeCondition, zipcode=:zipcode WHERE IntakeID=:IntakeID;'
+    try:
+      g.conn.execute(text(cmd), AnimalID=AnimalID, IntakeID = IntakeID, IntakeDate=IntakeDate, IntakeCondition=IntakeCondition, zipcode=zipcode) 
+      return redirect('/search')
+    except exc.SQLAlchemyError as e:
+      print(e)
+      return render_template('error.html')
 
 
 @app.route('/addLocation', methods=['POST'])
@@ -316,15 +381,27 @@ def addLocation():
   print(Location)
   LocationAddress = request.form['address']
   print(LocationAddress)
-    
-  cmd = 'INSERT INTO Location VALUES (:location, :address);'
-  try:
-    g.conn.execute(text(cmd), location = Location, address= LocationAddress)
-    return redirect('/search')
-  except exc.SQLAlchemyError as e:
-    error = True
-    print(e)
-    return render_template('error.html')
+
+  exists = check_existence("Location", "Location", Location)
+
+  if not exists:
+    cmd = 'INSERT INTO Location VALUES (:location, :address);'
+    try:
+      g.conn.execute(text(cmd), location = Location, address= LocationAddress)
+      return redirect('/search')
+    except exc.SQLAlchemyError as e:
+      error = True
+      print(e)
+      return render_template('error.html')
+  else:
+    cmd = 'UPDATE Location SET Address= :address WHERE zipcode=:location;'
+    try:
+      g.conn.execute(text(cmd), location = Location, address= LocationAddress)
+      return redirect('/search')
+    except exc.SQLAlchemyError as e:
+      error = True
+      print(e)
+      return render_template('error.html')
 
 @app.route('/addOutcome', methods=['POST'])
 def addOutcome():
@@ -335,15 +412,27 @@ def addOutcome():
   print(OutcomeDate)
   Subtype = request.form['OutcomeSubtype']
   print(Subtype)
-    
-  cmd = 'INSERT INTO Outcome VALUES (:AnimalID, :OutcomeID, :OutcomeDate, :OutcomeSubtype);'
-  try:
-    g.conn.execute(text(cmd), AnimalID=AnimalID, OutcomeID=OutcomeID, OutcomeDate = OutcomeDate, OutcomeSubtype=Subtype) 
-    return redirect('/search')
-  except exc.SQLAlchemyError as e:
-    error = True
-    print(e)
-    return render_template('error.html')
+  
+  exists = check_existence("Outcome", "OutcomeID", OutcomeID)
+
+  if not exists:
+    cmd = 'INSERT INTO Outcome VALUES (:AnimalID, :OutcomeID, :OutcomeDate, :OutcomeSubtype);'
+    try:
+      g.conn.execute(text(cmd), AnimalID=AnimalID, OutcomeID=OutcomeID, OutcomeDate = OutcomeDate, OutcomeSubtype=Subtype) 
+      return redirect('/search')
+    except exc.SQLAlchemyError as e:
+      error = True
+      print(e)
+      return render_template('error.html')
+  else:
+    cmd = 'UPDATE Outcome Set AnimalID=:AnimalID, OutcomeDate=:OutcomeDate, OutcomeSubtype=:OutcomeSubtype WHERE OutcomeID=:OutcomeID;'
+    try:
+      g.conn.execute(text(cmd), AnimalID=AnimalID, OutcomeID=OutcomeID, OutcomeDate = OutcomeDate, OutcomeSubtype=Subtype) 
+      return redirect('/search')
+    except exc.SQLAlchemyError as e:
+      error = True
+      print(e)
+      return render_template('error.html')
 
 if __name__ == "__main__":
   import click
