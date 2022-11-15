@@ -32,9 +32,15 @@
     }
   </style>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
+      // remove dropdown duplicates: https://stackoverflow.com/questions/23729456/how-to-remove-duplicate-dropdown-option-elements-with-same-value
+      $(".select option").each(function() {
+        $(this).siblings('[value="'+ this.value +'"]').remove();
+      });
+
       var coll = document.getElementsByClassName("collapsible");
       var i;
 
@@ -167,10 +173,11 @@
     </div>
 
     <div class="col-1 form-group">
-      <select name="animaltype" method="GET" action="/">
+      <select class="select" name="animaltype" method="GET" action="/">
           <option value="Any"  SELECTED>Any</option>
-          <option value="Dog" SELECTED>Dog</option>
-          <option value="Cat" SELECTED>Cat</option>
+          {% for name in data['animals'] %}
+          <option value="{{name['animaltype']}}" SELECTED>{{name['animaltype']}}</option>"
+          {% endfor %}
       </select>
     </div>
 
@@ -192,23 +199,23 @@
     </div>
 
     <div class="col-2 form-group">
-      <select name="intakecondition" method="GET" action="/">
+      <select class="select" name="intakecondition" method="GET" action="/">
         <option value="Any"  SELECTED>Any</option>
-        <option value="Normal"  SELECTED>Normal</option>
+        {% for name in data['intakes'] %}
+        <option value="{{name['intakecondition']}}" SELECTED>{{name['intakecondition']}}</option>"
+        {% endfor %}
+        <!-- <option value="Normal"  SELECTED>Normal</option>
         <option value="Sick"    SELECTED>Sick</option>
-        <option value="Injured" SELECTED>Injured</option>
+        <option value="Injured" SELECTED>Injured</option> -->
       </select>
     </div>
 
     <div class="col-2 form-group">
-      <select name="outcomesubtype" method="GET" action="/">
+      <select class="Select" name="outcomesubtype" method="GET" action="/">
         <option value="Any"  SELECTED>Any</option>
-        <option value="Rabies Risk" SELECTED>Rabies Risk</option>
-        <option value="Partner"     SELECTED>Partner</option>
-        <option value="Field"       SELECTED>Field</option>
-        <option value="Offsite"     SELECTED>Offsite</option>
-        <option value="Medical"     SELECTED>Medical</option>
-        <option value="Senior"      SELECTED>Senior</option>
+        {% for name in data['outcomes'] %}
+        <option value="{{name['outcomesubtype']}}" SELECTED>{{name['outcomesubtype']}}</option>"
+        {% endfor %}      
       </select>
     </div>
   </div>
